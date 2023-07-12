@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
+    "angularjs-toaster": "^3.0.0",
     "apexcharts": "^3.40.0",
     "ng-apexcharts": "^1.7.6",
     "ng2-pdf-viewer": "^9.1.5",

@@ -1,17 +1,19 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {PlantDto} from '../../../api/models/plant-dto';
-import {PlantResourceService} from '../../../api/services/plant-resource.service';
+// Import required modules and components
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PlantDto } from '../../../api/models/plant-dto';
+import { PlantResourceService } from '../../../api/services/plant-resource.service';
 import { SecurityModule } from 'src/app/security/security.module';
+
 @Component({
   selector: 'app-plant-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule,SecurityModule],
+  // Configure component dependencies and template
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, SecurityModule],
   templateUrl: './plant-form.component.html',
 })
 export class PlantFormComponent implements OnInit {
-
   @Input() type: 'CREATE' | 'UPDATE' | 'SEARCH' = 'SEARCH';
   @Input() inputValue: PlantDto;
   @Output() onSearch: EventEmitter<string> = new EventEmitter<string>();
@@ -22,13 +24,15 @@ export class PlantFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private service: PlantResourceService,
-  ) { }
+  ) {}
 
   ngOnInit() {
+    // Initialize the form on component initialization
     this.initForm();
   }
 
   initForm() {
+    // Create form controls with initial values and validators
     this.form = this.formBuilder.group({
       name: [this.inputValue?.name ?? null, [Validators.required]],
       status: [this.inputValue?.status ?? null, [Validators.required]],
@@ -43,6 +47,7 @@ export class PlantFormComponent implements OnInit {
   }
 
   validateForm() {
+    // Mark form controls as touched and update their validity
     for (const i in this.form.controls) {
       this.form.controls[i].markAsTouched();
       this.form.controls[i].updateValueAndValidity();
@@ -50,6 +55,7 @@ export class PlantFormComponent implements OnInit {
   }
 
   resetForm() {
+    // Reset the form and mark all controls as untouched
     this.form.reset();
     for (const i in this.form.controls) {
       this.form.controls[i].markAsUntouched();
@@ -57,11 +63,13 @@ export class PlantFormComponent implements OnInit {
   }
 
   onCancel() {
+    // Reset form and change type to SEARCH
     this.type = 'SEARCH';
     this.form.reset();
   }
 
   onSearchClear() {
+    // Reset form and emit null to clear the search
     this.form.reset();
     this.onSearch.emit(null);
   }
@@ -69,11 +77,13 @@ export class PlantFormComponent implements OnInit {
   onSubmit() {
     console.log('submit');
     this.validateForm();
+
     if (!this.form.invalid) {
       const data = this.form.value;
 
       if (!this.inputValue) {
-        this.service.createPlant({body: data}).subscribe({
+        // Create a new plant
+        this.service.createPlant({ body: data }).subscribe({
           next: (res) => {
             console.log(res);
             this.onCreate.emit(this.form.value);
@@ -84,7 +94,8 @@ export class PlantFormComponent implements OnInit {
           },
         });
       } else {
-        this.service.updatePlant({body: data, id: this.inputValue.id}).subscribe({
+        // Update an existing plant
+        this.service.updatePlant({ body: data, id: this.inputValue.id }).subscribe({
           next: (res) => {
             console.log(res);
             this.onCreate.emit(this.form.value);
@@ -95,13 +106,13 @@ export class PlantFormComponent implements OnInit {
           },
         });
       }
-
     } else {
       console.log('invalid');
     }
   }
 
   onSearchClick() {
+    //filtering
     const data = this.form.value;
     let filter = ``;
 
@@ -132,5 +143,4 @@ export class PlantFormComponent implements OnInit {
     console.log(filter);
     this.onSearch.emit(filter);
   }
-
 }
